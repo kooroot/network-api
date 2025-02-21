@@ -6,6 +6,8 @@ use crate::nexus_orchestrator::{
 };
 use prost::Message;
 use reqwest::Client;
+use tokio::time::timeout;
+use std::time::Duration;
 
 pub struct OrchestratorClient {
     client: Client,
