@@ -107,7 +107,7 @@ impl OrchestratorClient {
             node_type: NodeType::CliProver as i32,
         };
     
-        let result = timeout(Duration::from_secs(5), async {
+        let result = timeout(Duration::from_secs(10), async {
             self.make_request("/tasks", "POST", &request).await
         })
         .await;
