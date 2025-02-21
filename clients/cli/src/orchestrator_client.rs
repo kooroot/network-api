@@ -106,13 +106,20 @@ impl OrchestratorClient {
             node_id: node_id.to_string(),
             node_type: NodeType::CliProver as i32,
         };
-
-        let response = self
-            .make_request("/tasks", "POST", &request)
-            .await?
-            .ok_or("No response received from get_proof_task")?;
-
-        Ok(response)
+    
+        let result = timeout(Duration::from_secs(5), async {
+            self.make_request("/tasks", "POST", &request).await
+        })
+        .await;
+    
+        match result {
+            Ok(Ok(response)) => {
+                let response = response.ok_or("No response received from get_proof_task")?;
+                Ok(response)
+            }
+            Ok(Err(e)) => Err(e),
+            Err(_) => Err("Timed out while waiting for get_proof_task".into()),
+        }
     }
 
     pub async fn submit_proof(
